@@ -20,7 +20,5 @@ def water_jug_astar(A, B, target):
                 g = len(path)
                 heapq.heappush(pq, (g + h(nx, ny), nx, ny, path + [(nx, ny)]))
     return None
-# Space station problem
 result = water_jug_astar(7, 4, 6)
 print(result)
-
