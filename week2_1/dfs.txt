@@ -1,0 +1,40 @@
+from collections import deque
+def bfs_3_jugs(c1, c2, c3, target):
+    start = (0, 0, 0)
+    q = deque([(start, [start])])
+    vis = {start}
+    while q:
+        (a, b, c), path = q.popleft()
+        if a == target or b == target or c == target:
+            return path
+        moves = [
+            (c1, b, c), (a, c2, c), (a, b, c3), 
+            (0, b, c), (a, 0, c), (a, b, 0),         
+            (a - min(a, c2 - b), b + min(a, c2 - b), c),
+            (a - min(a, c3 - c), b, c + min(a, c3 - c)),
+            (a + min(b, c1 - a), b - min(b, c1 - a), c),
+            (a, b - min(b, c3 - c), c + min(b, c3 - c)),
+            (a + min(c, c1 - a), b, c - min(c, c1 - a)),
+            (a, b + min(c, c2 - b), c - min(c, c2 - b))
+        ]
+        for state in moves:
+            if state not in vis:
+                vis.add(state)
+                q.append((state, path + [state]))
+c1 = int(input("Enter capacity of Jug1: "))
+c2 = int(input("Enter capacity of Jug2: "))
+c3 = int(input("Enter capacity of Jug3: "))
+t  = int(input("Enter the target: "))
+print("Path from initial state to solution state ::")
+for s in bfs_3_jugs(c1, c2, c3, t):
+    print(s)
+Output:
+Enter capacity of Jug1: 4
+Enter capacity of Jug2: 3
+Enter capacity of Jug3: 2
+Enter the target: 1
+Path from initial state to solution state ::
+(0, 0, 0)
+(4, 0, 0)
+(1, 3, 0)
+
