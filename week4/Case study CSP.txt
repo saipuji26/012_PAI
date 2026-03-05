@@ -1,0 +1,29 @@
+# CSP using backtracking for exam proctor assignment
+
+proctors = [&quot;Alice&quot;, &quot;Bob&quot;, &quot;Charlie&quot;]
+exams = [&quot;Math&quot;, &quot;Physics&quot;, &quot;Chemistry&quot;]
+assignment = {}
+
+def is_valid(proctor):
+return proctor not in assignment.values()
+
+def assign_proctors(index=0):
+if index == len(exams):
+return True
+for p in proctors:
+if is_valid(p):
+assignment[exams[index]] = p
+if assign_proctors(index + 1):
+return True
+del assignment[exams[index]]
+return False
+
+assign_proctors()
+print(&quot;Exam Proctor Assignment:&quot;, assignment)
+
+Output:-
+
+Solution found:
+Math : Alice
+Physics : Bob
+Chemistry : Charlie
