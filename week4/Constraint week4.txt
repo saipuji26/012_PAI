@@ -1,0 +1,33 @@
+class CSP:
+    def __init__(self,v,d,c): self.v,self.d,self.c=v,d,c
+    def backtrack(self,a={}):
+        if len(a)==len(self.v): return a
+        var=next(x for x in self.v if x not in a)
+        for val in self.d[var]:
+            if all(f(var,val,a) for f in self.c.get(var,[])):
+                a[var]=val
+                r=self.backtrack(a)
+                if r: return r
+                a.pop(var)
+vars=['A','B','C']
+doms={v:['Red','Green','Blue'] for v in vars}
+cons={
+'A':[lambda v,val,a:'B' not in a or a['B']!=val],
+'B':[lambda v,val,a:'A' not in a or a['A']!=val],
+'C':[lambda v,val,a:'A' not in a or a['A']!=val,
+     lambda v,val,a:'B' not in a or a['B']!=val]
+}
+sol=CSP(vars,doms,cons).backtrack({})
+if sol:
+    print("Solution found:")
+    for k,v in sol.items():
+        print(k,":",v)
+else:
+    print("No solution found")
+
+Output:-
+
+Solution found:
+A : Red
+B : Green
+C : Blue
