@@ -1,33 +1,32 @@
-class CSP:
-    def __init__(self,v,d,c): self.v,self.d,self.c=v,d,c
-    def backtrack(self,a={}):
-        if len(a)==len(self.v): return a
-        var=next(x for x in self.v if x not in a)
-        for val in self.d[var]:
-            if all(f(var,val,a) for f in self.c.get(var,[])):
-                a[var]=val
-                r=self.backtrack(a)
-                if r: return r
-                a.pop(var)
-vars=['A','B','C']
-doms={v:['Red','Green','Blue'] for v in vars}
-cons={
-'A':[lambda v,val,a:'B' not in a or a['B']!=val],
-'B':[lambda v,val,a:'A' not in a or a['A']!=val],
-'C':[lambda v,val,a:'A' not in a or a['A']!=val,
-     lambda v,val,a:'B' not in a or a['B']!=val]
-}
-sol=CSP(vars,doms,cons).backtrack({})
-if sol:
-    print("Solution found:")
-    for k,v in sol.items():
-        print(k,":",v)
-else:
-    print("No solution found")
+def safe(n, c, a, g):    return all(a.get(i) != c for i in g[n])
+def bt(g, col, a):
+    if len(a) == len(g):
+        return a
+    n = next(i for i in g if i not in a)
+    for c in col:
+        if safe(n, c, a, g):
+            a[n] = c
+            r = bt(g, col, a)
+            if r:
+                return r
+            a.pop(n)
+    return None
+nodes = input("Nodes: ").split()
+g = {n: input(f"Neighbors of {n}: ").split() for n in nodes}
+colors = input("Colors: ").split()
+s = bt(g, colors, {})
+print("Assigned Colors:")
+print("\n".join(f"{k} : {v}" for k, v in s.items()) if s else "No solution")
 
-Output:-
-
-Solution found:
-A : Red
-B : Green
-C : Blue
+OUTPUT:-
+Nodes: A B C D
+Neighbors of A: B C
+Neighbors of B: A C D
+Neighbors of C: A B D
+Neighbors of D: B C
+Colors: RED YELLOW BLUE
+Assigned Colors:
+A : RED
+B : YELLOW
+C : BLUE
+D : RED
