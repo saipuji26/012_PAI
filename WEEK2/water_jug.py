@@ -1,12 +1,13 @@
 import heapq
 def water_jug_astar(A, B, target):
     h = lambda x, y: min(abs(target - x), abs(target - y))
-    moves = lambda x, y: [
-        (A, y), (x, B), (0, y), (x, 0),
-        (x - min(x, B - y), y + min(x, B - y)),
-        (x + min(y, A - x), y - min(y, A - x))
-    ]
-    pq = [(0, 0, 0, [(0, 0)])]  # (f, x, y, path)
+    def moves(x, y):
+        return [
+            (A, y), (x, B), (0, y), (x, 0),
+            (x - min(x, B - y), y + min(x, B - y)),
+            (x + min(y, A - x), y - min(y, A - x))
+        ]
+    pq = [(0, 0, 0, [(0, 0)])]
     visited = set()
     while pq:
         f, x, y, path = heapq.heappop(pq)
@@ -20,4 +21,17 @@ def water_jug_astar(A, B, target):
                 g = len(path)
                 heapq.heappush(pq, (g + h(nx, ny), nx, ny, path + [(nx, ny)]))
     return None
-print(water_jug_astar(4, 3, 2))
+A = int(input("Enter capacity of jug 1: "))
+B = int(input("Enter capacity of jug 2: "))
+target = int(input("Enter target: "))
+result = water_jug_astar(A, B, target)
+if result:
+    print("Path:", result)
+else:
+    print("No solution")
+    
+OUTPUT:-
+Enter capacity of jug 1: 4
+Enter capacity of jug 2: 3
+Enter target: 2
+Path: [(0, 0), (0, 3), (3, 0), (3, 3), (4, 2)]
