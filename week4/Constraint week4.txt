@@ -1,4 +1,5 @@
-def safe(n, c, a, g):    return all(a.get(i) != c for i in g[n])
+def safe(n, c, a, g):   
+    return all(a.get(i) != c for i in g[n])
 def bt(g, col, a):
     if len(a) == len(g):
         return a
