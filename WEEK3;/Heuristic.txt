@@ -1,151 +1,41 @@
 import heapq
-import copy
-class PuzzleState:
-    def __init__(self, board, parent=None, move="Initial", g=0):
-        self.board = board
-        self.parent = parent
-        self.move = move
-        self.g = g  
-        self.h = 0  
-    def __lt__(self, other):
-        return (self.g + self.h) < (other.g + other.h)
-    def __eq__(self, other):
-        return self.board == other.board
-    def __hash__(self):
-        return hash(tuple(map(tuple, self.board)))
-goal_state = [[1, 2, 3],
-              [4, 5, 6],
-              [7, 8, 0]]
-moves = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-move_names = ["Right", "Down", "Left", "Up"]
-def calculate_manhattan_distance(state):
-    distance = 0
-    for i in range(3):
-        for j in range(3):
-            if state.board[i][j] != 0:
-                x, y = divmod(state.board[i][j] - 1, 3)
-                distance += abs(x - i) + abs(y - j)
-    return distance
-def solve_8_puzzle(initial_state, max_solutions=8):
-    open_list = []
-    closed_set = set()
-    solutions = []
-    initial_state.h = calculate_manhattan_distance(initial_state)
-    heapq.heappush(open_list, initial_state)
-    while open_list and len(solutions) < max_solutions:
-        current_state = heapq.heappop(open_list)
-        if current_state.board == goal_state:
-            path = []
-            temp = current_state
-            while temp is not None:
-                path.append(temp)
-                temp = temp.parent
-            path = path[::-1]
-            solutions.append(path)
-            continue
-        if current_state in closed_set:
-            continue
-        closed_set.add(current_state)
-        for i in range(3):
-            for j in range(3):
-                if current_state.board[i][j] == 0:
-                    curr_i, curr_j = i, j
-                    break
-        for move, move_name in zip(moves, move_names):
-            new_i, new_j = curr_i + move[0], curr_j + move[1]
-            if 0 <= new_i < 3 and 0 <= new_j < 3:
-                new_board = copy.deepcopy(current_state.board)
-                new_board[curr_i][curr_j], new_board[new_i][new_j] = \
-                    new_board[new_i][new_j], new_board[curr_i][curr_j]
-                new_state = PuzzleState(new_board, current_state, move_name, current_state.g + 1)
-                new_state.h = calculate_manhattan_distance(new_state)
-                if new_state not in closed_set:
-                    heapq.heappush(open_list, new_state)
-    return solutions
-def print_solution(solution, index):
-    print(f"\nSolution {index + 1}: {len(solution) - 1} moves")
-    for step, state in enumerate(solution):
-        print(f"Step {step}: {state.move}")
-        for row in state.board:
-            print(row)
-    print("-" * 30)
-def main():
-    initial_board = [[1, 2, 4],
-                     [6, 5, 0],
-                     [7, 8, 3]]
-    initial_state = PuzzleState(initial_board)
-    solutions = solve_8_puzzle(initial_state, max_solutions=8)
-    if solutions:
-        for i, sol in enumerate(solutions):
-            print_solution(sol, i)
-    else:
-        print("No solution found.")
-if __name__ == "__main__":
-    main()
+goal = [1,2,3,4,5,6,7,8,0]
+def h(s): return sum(abs(i//3 - v//3) + abs(i%3 - v%3) for i,v in enumerate(s) if v)
+def moves(s):
+    i = s.index(0)
+    for d in [-3,3,-1,1]:
+        j = i + d
+        if 0 <= j < 9 and not (i%3==0 and d==-1) and not (i%3==2 and d==1):
+            t = s[:]
+            t[i], t[j] = t[j], t[i]
+            yield t
+def solve(start):
+    pq = [(h(start), start, [start])]
+    seen = set()
+    while pq:
+        _, s, path = heapq.heappop(pq)
+        if s == goal: return path
+        if tuple(s) in seen: continue
+        seen.add(tuple(s))
+        for n in moves(s):
+            heapq.heappush(pq, (len(path)+h(n), n, path+[n]))
+start = list(map(int, input("Enter puzzle (0 for blank): ").split()))
+res = solve(start)
+for step in res:
+    for i in range(0,9,3):
+        print(step[i:i+3])
+    print()
 
 OUTPUT:-
-Solution 1: 15 moves
-Step 0: Initial
-[1, 2, 4]
-[6, 5, 0]
-[7, 8, 3]
-Step 1: Down
-[1, 2, 4]
-[6, 5, 3]
-[7, 8, 0]
-Step 2: Left
-[1, 2, 4]
-[6, 5, 3]
-[7, 0, 8]
-Step 3: Up
-[1, 2, 4]
-[6, 0, 3]
-[7, 5, 8]
-Step 4: Left
-[1, 2, 4]
-[0, 6, 3]
-[7, 5, 8]
-Step 5: Up
-[0, 2, 4]
-[1, 6, 3]
-[7, 5, 8]
-Step 6: Right
-[2, 0, 4]
-[1, 6, 3]
-[7, 5, 8]
-Step 7: Right
-[2, 4, 0]
-[1, 6, 3]
-[7, 5, 8]
-Step 8: Down
-[2, 4, 3]
-[1, 6, 0]
-[7, 5, 8]
-Step 9: Left
-[2, 4, 3]
-[1, 0, 6]
-[7, 5, 8]
-Step 10: Up
-[2, 0, 3]
-[1, 4, 6]
-[7, 5, 8]
-Step 11: Left
-[0, 2, 3]
-[1, 4, 6]
-[7, 5, 8]
-Step 12: Down
-[1, 2, 3]
-[0, 4, 6]
-[7, 5, 8]
-Step 13: Right
+Enter puzzle (0 for blank): 1 2 3 4 0 6 7 5 8
 [1, 2, 3]
 [4, 0, 6]
 [7, 5, 8]
-Step 14: Down
+
 [1, 2, 3]
 [4, 5, 6]
 [7, 0, 8]
-Step 15: Right
+
 [1, 2, 3]
 [4, 5, 6]
 [7, 8, 0]
