@@ -1,4 +1,4 @@
-proctors = [&quot;Alice&quot;, &quot;Bob&quot;, &quot;Charlie&quot;]
+proctors = ["Alice", "Bob", "Charlie"]
 exams = ["Math", "Physics", "Chemistry"]
 assignment = {}
 def is_valid(proctor):
