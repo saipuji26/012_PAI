@@ -1,5 +1,5 @@
 proctors = [&quot;Alice&quot;, &quot;Bob&quot;, &quot;Charlie&quot;]
-exams = [&quot;Math&quot;, &quot;Physics&quot;, &quot;Chemistry&quot;]
+exams = ["Math", "Physics", "Chemistry"]
 assignment = {}
 def is_valid(proctor):
 return proctor not in assignment.values()
@@ -14,7 +14,7 @@ return True
 del assignment[exams[index]]
 return False
 assign_proctors()
-print(&quot;Exam Proctor Assignment:&quot;, assignment)
+print("Exam Proctor Assignment:", assignment)
 
 Output:-
 
