@@ -22,3 +22,8 @@ def water_jug_astar(A, B, target):
     return None
 result = water_jug_astar(7, 4, 6)
 print(result)
+OUTPUT:-
+Jug A: 4
+Jug B: 3
+Target: 2
+Solution: [(0, 0), (0, 3), (3, 0), (3, 3), (4, 2), (0, 2), (2, 0)]
