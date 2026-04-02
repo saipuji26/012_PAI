@@ -1,0 +1,88 @@
+AIM : Project: AI-Based Financial Loan Default Risk Predictor
+Problem:
+ Banks must assess uncertainty in loan approvals.
+Bayesian Nodes:
+●	Income Stability
+●	Credit History
+●	Employment Type
+●	Default Risk
+Inference:
+ Predict default probability with incomplete data
+ 
+CODE :
+
+# Install pgmpy (Run this first)
+!pip install pgmpy
+
+# Import Libraries
+from pgmpy.models import DiscreteBayesianNetwork
+from pgmpy.factors.discrete import TabularCPD
+from pgmpy.inference import VariableElimination
+
+# Step 1: Define Structure
+model = DiscreteBayesianNetwork([
+    ('Income', 'Default'),
+    ('Credit', 'Default')
+])
+
+# Step 2: Define CPDs
+
+# Income (0 = High, 1 = Low)
+cpd_income = TabularCPD(
+    variable='Income',
+    variable_card=2,
+    values=[[0.6], [0.4]]
+)
+
+# Credit (0 = Good, 1 = Bad)
+cpd_credit = TabularCPD(
+    variable='Credit',
+    variable_card=2,
+    values=[[0.7], [0.3]]
+)
+
+# Default (0 = No, 1 = Yes)
+cpd_default = TabularCPD(
+    variable='Default',
+    variable_card=2,
+    values=[
+        [0.95, 0.8, 0.9, 0.5],
+        [0.05, 0.2, 0.1, 0.5]
+    ],
+    evidence=['Income', 'Credit'],
+    evidence_card=[2, 2]
+)
+
+# Step 3: Add CPDs
+model.add_cpds(cpd_income, cpd_credit, cpd_default)
+
+# Step 4: Check Model
+print("Model Check:", model.check_model())
+
+# Step 5: Inference
+infer = VariableElimination(model)
+
+# Step 6: Query
+query_result = infer.query(
+    variables=['Default'],
+    evidence={'Income': 1, 'Credit': 0}
+)
+
+# Step 7: Output
+print("\nLoan Default Prediction Result:")
+print(query_result)
+
+
+
+OUTPUT :
+
+Model Check: True
+
+Loan Default Prediction Result:
++------------+----------------+
+| Default    |   phi(Default) |
++============+================+
+| Default(0) |         0.9000 |
++------------+----------------+
+| Default(1) |         0.1000 |
++------------+----------------+

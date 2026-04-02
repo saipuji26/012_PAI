@@ -1,0 +1,105 @@
+    AIM : Bayesian_Network
+
+    CODE :
+  # Experiment 6
+# Implementation of Bayesian Network
+
+# Import Libraries
+import numpy as np
+import pandas as pd
+
+# Import Bayesian Network Libraries
+from pgmpy.models import DiscreteBayesianNetwork
+from pgmpy.inference import VariableElimination
+
+# Step 1: Create Dataset
+data = pd.DataFrame({
+    'Rain': ['No', 'No', 'Yes', 'Yes', 'No', 'Yes', 'Yes', 'No'],
+    'TrafficJam': ['Yes', 'No', 'Yes', 'No', 'Yes', 'Yes', 'No', 'No'],
+    'ArriveLate': ['Yes', 'No', 'Yes', 'No', 'No', 'Yes', 'Yes', 'No']
+})
+
+# Display Dataset
+print("Dataset:")
+print(data)
+
+# Step 2: Define Bayesian Network Structure
+model = DiscreteBayesianNetwork([
+    ('Rain', 'TrafficJam'),
+    ('TrafficJam', 'ArriveLate')
+])
+
+# Step 3: Fit Model (Learn Parameters)
+model.fit(data)
+
+# Step 4: Display Conditional Probability Tables
+print("\nConditional Probability Distributions (CPDs):\n")
+for cpd in model.get_cpds():
+    print(cpd)
+
+# Step 5: Perform Inference
+inference = VariableElimination(model)
+
+# Step 6: Query Example
+print("\nQuery Result:")
+query = inference.query(
+    variables=['ArriveLate'],
+    evidence={'Rain': 'Yes'}
+)
+
+# Step 7: Display Result
+print("\nProbability of Arriving Late given Rain = Yes")
+print(query)
+
+
+
+
+OUTPUT:
+
+Dataset:
+  Rain TrafficJam ArriveLate
+0   No        Yes        Yes
+1   No         No         No
+2  Yes        Yes        Yes
+3  Yes         No         No
+4   No        Yes         No
+5  Yes        Yes        Yes
+6  Yes         No        Yes
+7   No         No         No
+
+Conditional Probability Distributions (CPDs):
+
++-----------+-----+
+| Rain(No)  | 0.5 |
++-----------+-----+
+| Rain(Yes) | 0.5 |
++-----------+-----+
++-----------------+----------+-----------+
+| Rain            | Rain(No) | Rain(Yes) |
++-----------------+----------+-----------+
+| TrafficJam(No)  | 0.5      | 0.5       |
++-----------------+----------+-----------+
+| TrafficJam(Yes) | 0.5      | 0.5       |
++-----------------+----------+-----------+
++-----------------+----------------+-----------------+
+| TrafficJam      | TrafficJam(No) | TrafficJam(Yes) |
++-----------------+----------------+-----------------+
+| ArriveLate(No)  | 0.75           | 0.25            |
++-----------------+----------------+-----------------+
+| ArriveLate(Yes) | 0.25           | 0.75            |
++-----------------+----------------+-----------------+
+
+Query Result:
+
+Probability of Arriving Late given Rain = Yes
++-----------------+-------------------+
+| ArriveLate      |   phi(ArriveLate) |
++=================+===================+
+| ArriveLate(No)  |            0.5000 |
++-----------------+-------------------+
+| ArriveLate(Yes) |            0.5000 |
++-----------------+-------------------+
+
+[ ]
+
+
