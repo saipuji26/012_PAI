@@ -1,0 +1,59 @@
+states = ['Rainy', 'Sunny']
+obs_sequence = ['walk', 'shop', 'clean']
+start_prob = {
+    'Rainy': 0.6,
+    'Sunny': 0.4
+}
+transition_prob = {
+    'Rainy': {'Rainy': 0.7, 'Sunny': 0.3},
+    'Sunny': {'Rainy': 0.4, 'Sunny': 0.6}
+}
+
+emission_prob = {
+    'Rainy': {'walk': 0.1, 'shop': 0.4, 'clean': 0.5},
+    'Sunny': {'walk': 0.6, 'shop': 0.3, 'clean': 0.1}
+}
+
+def forward_algorithm(states, observations, start_prob, transition_prob, emission_prob):
+    forward = []
+
+
+    f0 = {}
+    for state in states:
+        f0[state] = start_prob[state] * emission_prob[state][observations[0]]
+    forward.append(f0)
+
+ 
+    for t in range(1, len(observations)):
+        ft = {}
+        for curr_state in states:
+            prob = 0
+            for prev_state in states:
+                prob += forward[t-1][prev_state] * transition_prob[prev_state][curr_state]
+            ft[curr_state] = prob * emission_prob[curr_state][observations[t]]
+        forward.append(ft)
+
+  
+    total_probability = sum(forward[-1][state] for state in states)
+
+    return total_probability, forward
+
+
+
+result, matrix = forward_algorithm(
+    states, obs_sequence, start_prob, transition_prob, emission_prob
+)
+
+print("Forward Probability Table:")
+for i, step in enumerate(matrix):
+    print(f"Step {i+1}:", step)
+
+print("\nFinal Probability of Observation Sequence:", result)
+
+output:
+Forward Probability Table:
+Step 1: {'Rainy': 0.06, 'Sunny': 0.24}
+Step 2: {'Rainy': 0.055200000000000006, 'Sunny': 0.04859999999999999}
+Step 3: {'Rainy': 0.02904, 'Sunny': 0.004572}
+
+Final Probability of Observation Sequence: 0.033612
