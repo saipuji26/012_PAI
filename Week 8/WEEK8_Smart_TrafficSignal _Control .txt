@@ -1,0 +1,46 @@
+CASE STUDY MDP - Value Iteration: Smart Traffic Signal Control 
+
+CODE :
+
+states = ["Low", "Medium", "High"]
+actions = ["Short", "Medium", "Long"]
+gamma = 0.9
+
+# Rewards
+reward = {"Low": 10, "Medium": 5, "High": -10}
+
+# Transition model (simplified probabilities)
+transition = {
+    "Low": {"Low": 0.7, "Medium": 0.3, "High": 0.0},
+    "Medium": {"Low": 0.2, "Medium": 0.5, "High": 0.3},
+    "High": {"Low": 0.0, "Medium": 0.4, "High": 0.6}
+}
+
+# Initialize values
+V = {s: 0 for s in states}
+
+# Value Iteration
+for _ in range(20):
+    new_V = {}
+    for s in states:
+        action_values = []
+
+        for a in actions:
+            value = sum(
+                transition[s][s_next] * (reward[s] + gamma * V[s_next])
+                for s_next in states
+            )
+            action_values.append(value)
+
+        new_V[s] = max(action_values)
+
+    V = new_V
+
+print("Optimal State Values for Traffic Control:", V)
+
+OUTPUT:
+
+Optimal State Values for Traffic Control: {'Low': 38.9910646810772, 'Medium': 17.17287330522406, 'High': -8.754591600732326}
+
+
+
