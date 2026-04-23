@@ -1,0 +1,70 @@
+CASE STUDY MDP - Policy Iteration: Warehouse Robot Scheduling
+
+CODE :
+
+states = ["Idle", "Working"]
+actions = ["Work", "Charge"]
+gamma = 0.9
+
+# Rewards
+reward = {
+    "Idle": 1,
+    "Working": 5
+}
+
+# Transition probabilities
+transition = {
+    "Idle": {
+        "Work": {"Working": 1.0},
+        "Charge": {"Idle": 1.0}
+    },
+    "Working": {
+        "Work": {"Working": 0.7, "Idle": 0.3},
+        "Charge": {"Idle": 1.0}
+    }
+}
+
+# Initialize policy and values
+policy = {s: "Work" for s in states}
+V = {s: 0 for s in states}
+
+# Policy Iteration
+for _ in range(10):
+
+    # Policy Evaluation
+    for _ in range(10):
+        new_V = {}
+        for s in states:
+            a = policy[s]
+            new_V[s] = sum(
+                transition[s][a][s_next] *
+                (reward[s] + gamma * V[s_next])
+                for s_next in transition[s][a]
+            )
+        V = new_V
+
+    # Policy Improvement
+    stable = True
+    for s in states:
+        old_action = policy[s]
+
+        best_action = max(actions, key=lambda a: sum(
+            transition[s][a][s_next] *
+            (reward[s] + gamma * V[s_next])
+            for s_next in transition[s][a]
+        ))
+
+        policy[s] = best_action
+
+        if old_action != best_action:
+            stable = False
+
+    if stable:
+        break
+
+print("Optimal Warehouse Robot Policy:", policy)
+
+OUTPUT:
+
+Optimal Warehouse Robot Policy: {'Idle': 'Work', 'Working': 'Work'}
+
